@@ -4,6 +4,9 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 
+from sklearn.neural_network import MLPClassifier
+
+
 def for_bangkok_air_quality():
   df = pd.read_csv(r'data/bangkok-air-quality.csv')
   print(df)
@@ -38,6 +41,7 @@ def get_files_list(mypath):
   return onlyfiles
 
 if __name__ == '__main__':
+  '''
   for_bangkok_air_quality()
   
   files_list = get_files_list('data')
@@ -54,8 +58,8 @@ if __name__ == '__main__':
   df_new.replace(' ', ' -1', inplace=True)
   print(df_new)
   df_new.to_csv(r'data/humid-temp-reorder.csv', index = False, header=True)
-
   '''  
+  '''
   df_in = pd.read_csv(r'data/humid-temp-reorder.csv')
   df_out = pd.read_csv(r'data/bangkok-air-quality-reorder.csv')
   
@@ -69,4 +73,45 @@ if __name__ == '__main__':
   df_in.to_csv(r'data/input.csv', index = False, header=True)
   df_out.to_csv(r'data/output.csv', index = False, header=True)
   '''
+  data_in = pd.read_csv(r'data/input.csv')
+  data_out = pd.read_csv(r'data/output.csv')
+  
+  data_in = data_in.drop(data_in.columns[0], axis=1)
+  data_in = data_in.drop(data_in.index[0])
 
+  del_column = [x for x in data_out.columns if x.find("pm25") == -1]
+  print(del_column)
+  print([data_out.columns])
+  print(type(data_out.columns))
+
+  data_out = data_out.drop(del_column, axis=1)
+  data_out = data_out.drop(data_out.index[0])
+
+  print(data_in)
+  print(data_out)
+
+  cnn = MLPClassifier()
+  cnn.fit(data_in, data_out.values.ravel())
+  print(cnn)
+  
+  test_in = pd.read_csv(r'data/test_in.csv')
+  test_in = test_in.drop(test_in.columns[0], axis=1)
+  test_in = test_in.drop(test_in.index[0])
+  test_in = test_in.to_numpy()
+  print(test_in)
+
+  Y_pred = []
+  for i in range(len(test_in)):
+    y_pred=(cnn.predict(test_in[[i]]))
+    #print(y_pred)
+    Y_pred.append(y_pred[0])
+  print(Y_pred)
+
+  test_out = pd.read_csv(r'data/test_result.csv')
+  test_out = test_out.drop(del_column, axis=1)
+  test_out = test_out.drop(test_out.index[0])
+  test_out = test_out.to_numpy()
+  y = []
+  for x in test_out:
+    y.append(x[0])
+  print(y)
