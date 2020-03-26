@@ -38,7 +38,8 @@ def get_files_list(mypath):
   return onlyfiles
 
 if __name__ == '__main__':
-  #for_bangkok_air_quality()
+  for_bangkok_air_quality()
+  
   files_list = get_files_list('data')
   files_list = [x for x in files_list if x[0] is 'p']
   print(files_list)
@@ -53,4 +54,19 @@ if __name__ == '__main__':
   df_new.replace(' ', ' -1', inplace=True)
   print(df_new)
   df_new.to_csv(r'data/humid-temp-reorder.csv', index = False, header=True)
+
+  '''  
+  df_in = pd.read_csv(r'data/humid-temp-reorder.csv')
+  df_out = pd.read_csv(r'data/bangkok-air-quality-reorder.csv')
+  
+  duplicates_in = set(df_in.index).intersection(df_out.index)
+  print(duplicates_in)
+  duplicates_out = set(df_out.index).intersection(df_in.index)
+  
+  df_in = df_in.drop(duplicates_in, axis=0)
+  df_out = df_out.drop(duplicates_out, axis=0)
+  
+  df_in.to_csv(r'data/input.csv', index = False, header=True)
+  df_out.to_csv(r'data/output.csv', index = False, header=True)
+  '''
 
