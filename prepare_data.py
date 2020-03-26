@@ -40,6 +40,11 @@ def get_files_list(mypath):
   onlyfiles = [f for f in listdir(mypath) if isfile(join(mypath, f))]
   return onlyfiles
 
+def add_day_label(data):
+  data['date'] = pd.to_datetime(data['date'], errors='coerce')
+  data['weekday'] = data['date'].dt.dayofweek
+  return data
+
 if __name__ == '__main__':
   '''
   for_bangkok_air_quality()
@@ -73,11 +78,14 @@ if __name__ == '__main__':
   df_in.to_csv(r'data/input.csv', index = False, header=True)
   df_out.to_csv(r'data/output.csv', index = False, header=True)
   '''
+    
   data_in = pd.read_csv(r'data/input.csv')
   data_out = pd.read_csv(r'data/output.csv')
   
+  data_in = add_day_label(data_in)
   data_in = data_in.drop(data_in.columns[0], axis=1)
   data_in = data_in.drop(data_in.index[0])
+  print(data_in)
 
   del_column = [x for x in data_out.columns if x.find("pm25") == -1]
   print(del_column)
@@ -95,6 +103,7 @@ if __name__ == '__main__':
   print(cnn)
   
   test_in = pd.read_csv(r'data/test_in.csv')
+  test_in = add_day_label(test_in)
   test_in = test_in.drop(test_in.columns[0], axis=1)
   test_in = test_in.drop(test_in.index[0])
   test_in = test_in.to_numpy()
